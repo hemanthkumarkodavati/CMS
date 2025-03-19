@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class CourseServiceImpl implements CourseService {
+
     private final CourseRepository courseRepository;
     private final InstructorRepository instructorRepository;
     private final LessonRepository lessonRepository;

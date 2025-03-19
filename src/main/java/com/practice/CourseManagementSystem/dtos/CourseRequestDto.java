@@ -2,6 +2,7 @@ package com.practice.CourseManagementSystem.dtos;
 
 import lombok.Getter;
 import lombok.Setter;
+
 import java.util.List;
 
 @Getter
@@ -10,7 +11,7 @@ public class CourseRequestDto {
 
     private String title;
 
-    private String  description;
+    private String description;
 
     private Double price;
 

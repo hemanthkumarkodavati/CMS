@@ -44,6 +44,7 @@ public class CourseController {
             );
         }
     }
+
     @PostMapping("/enroll-students")
     public ResponseModel enrollStudents(@RequestParam int studentId , @RequestParam int courseId){
         try {
