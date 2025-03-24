@@ -1,6 +1,9 @@
 package com.practice.CourseManagementSystem.servicesImpl;
 
+import com.practice.CourseManagementSystem.Exceptions.CourseException;
+import com.practice.CourseManagementSystem.Exceptions.CourseNotFoundException;
 import com.practice.CourseManagementSystem.Exceptions.ResourceNotFoundException;
+import com.practice.CourseManagementSystem.Exceptions.StudentNotFoundException;
 import com.practice.CourseManagementSystem.dtos.CourseRequestDto;
 import com.practice.CourseManagementSystem.dtos.CourseResponseDto;
 import com.practice.CourseManagementSystem.dtos.InstructorDto;
@@ -46,7 +49,7 @@ public class CourseServiceImpl implements CourseService {
     public CourseResponseDto createCourse(CourseRequestDto courseRequestDto) {
         CourseEntity courseEntity = convertDtoToEntity(courseRequestDto);
 
-        checkInstructorIsAvaialble(courseRequestDto.getInstructorIds());
+        checkInstructorIsAvailable(courseRequestDto.getInstructorIds());
 
         CourseEntity savedCourse = courseRepository.save(courseEntity);
 
@@ -72,13 +75,13 @@ public class CourseServiceImpl implements CourseService {
             lessonRepository.saveAll(lessons);
         }
         CourseEntity refreshedCourse = courseRepository.findById(savedCourse.getId())
-                .orElseThrow(() -> new RuntimeException("Failed to fetch created course"));
+                .orElseThrow(() -> new CourseException("Failed to fetch created course"));
 
         // Convert to response DTO
         return convertToResponseDto(refreshedCourse);
     }
 
-    private void checkInstructorIsAvaialble(List<Integer> instructorIds) {
+    private void checkInstructorIsAvailable(List<Integer> instructorIds) {
         for (Integer id: instructorIds) {
             InstructorEntity instructorEntity = instructorRepository.findById(id).
                     orElseThrow(() -> new EntityNotFoundException("Instructor not found with ID: " + id));
@@ -143,25 +146,25 @@ public class CourseServiceImpl implements CourseService {
     @Transactional
     public void enrollStudent(int studentId, int courseId) {
         CourseEntity courseEntity = courseRepository.findById(courseId).
-                orElseThrow(() -> new ResourceNotFoundException("Course not found with ID: " + courseId));
+                orElseThrow(() -> new CourseNotFoundException("Course not found with ID: " + courseId));
         StudentEntity studentEntity = studentRepository.findById(studentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Student not found with ID: " + studentId));
+                .orElseThrow(() -> new StudentNotFoundException("Student not found with ID: " + studentId));
         courseEntity.getStudentEntityList().add(studentEntity);
         courseRepository.save(courseEntity);
     }
 
     public void unenrollStudent(int studentId, int courseId){
         CourseEntity courseEntity = courseRepository.findById(courseId).
-                orElseThrow(() -> new ResourceNotFoundException("Course not found with ID: " + courseId));
+                orElseThrow(() -> new CourseNotFoundException("Course not found with ID: " + courseId));
         StudentEntity studentEntity = studentRepository.findById(studentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Student not found with ID: " + studentId));
+                .orElseThrow(() -> new StudentNotFoundException("Student not found with ID: " + studentId));
         courseEntity.getStudentEntityList().remove(studentEntity);
         courseRepository.save(courseEntity);
     }
 
     public CourseResponseDto getCourseById(Integer courseId){
         CourseEntity courseEntity = courseRepository.findById(courseId).
-                orElseThrow(()->new ResourceNotFoundException("courseId is not available"));
+                orElseThrow(()->new CourseNotFoundException("courseId is not available"));
 
         return convertEntityToDto(courseEntity);
 
